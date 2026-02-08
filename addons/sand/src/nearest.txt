@@ -1,0 +1,45 @@
+
+Vector2i SandEngine::find_last_available_cell(
+	const Vector2i &from,
+	const Vector2i &to
+) const {
+	int x0 = from.x;
+	int y0 = from.y;
+	int x1 = to.x;
+	int y1 = to.y;
+
+	int dx = abs(x1 - x0);
+	int sx = x0 < x1 ? 1 : -1;
+
+	int dy = -abs(y1 - y0);
+	int sy = y0 < y1 ? 1 : -1;
+
+	int err = dx + dy;
+
+	Vector2i last = from;
+	bool first = true;
+
+	while (true) {
+		// skip starting cell (occupied by ourselves)
+		if (!first) {
+			if (x0 < 0 || y0 < 0 || x0 >= width || y0 >= height)
+				break;
+
+			if (cells[y0 * width + x0].type != 0)
+				break;
+
+			last = Vector2i(x0, y0);
+		}
+
+		first = false;
+
+		if (x0 == x1 && y0 == y1)
+			break;
+
+		int e2 = 2 * err;
+		if (e2 >= dy) { err += dy; x0 += sx; }
+		if (e2 <= dx) { err += dx; y0 += sy; }
+	}
+
+	return last;
+}

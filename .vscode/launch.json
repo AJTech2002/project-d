@@ -1,0 +1,23 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+
+   {
+      "name": "(gdb) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "C:\\Users\\avenkat\\Desktop\\dev\\godot\\bin\\godot.windows.editor.dev.x86_64.exe",
+      "args": ["--path", "C:\\Users\\avenkat\\Desktop\\dev\\gamedev\\project-d"], //  "--editor"
+      "cwd": "C:\\Users\\avenkat\\Desktop\\dev\\gamedev\\project-d",
+      "console": "internalConsole",
+   },
+   {
+	"name": "Launch Godot Debugger",
+	"type": "godot",
+	"request": "launch",
+   "project": "C:\\Users\\avenkat\\Desktop\\dev\\gamedev\\project-d",
+   "address": "127.0.0.1",
+   "port": 6007
+}
+   ]
+}
