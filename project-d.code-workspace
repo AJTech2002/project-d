@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "addons/sand"
+		}
+	],
+	"settings": {
+		"godotTools.editorPath.godot4": "c:\\Users\\avenkat\\Desktop\\dev\\godot\\bin\\godot.windows.editor.x86_64.exe",
+		"godotTools.inlayHints.gdscript": true
+	}
+}

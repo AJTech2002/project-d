@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dlqss2bt2415"
+path="res://.godot/imported/overlay_compute.glsl-bb9bf6035df6c6712a9b85c989b59e1a.res"
+
+[deps]
+
+source_file="res://overlay_compute.glsl"
+dest_files=["res://.godot/imported/overlay_compute.glsl-bb9bf6035df6c6712a9b85c989b59e1a.res"]
+
+[params]
+

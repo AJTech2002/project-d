@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cto16x53n0ftd"]
+
+[ext_resource type="Script" uid="uid://xbi8ecm5ohti" path="res://compute_renderer.gd" id="1_wtcfe"]
+
+[node name="Node2D" type="Node2D" unique_id=2126344831]
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=1067300744]
+position = Vector2(119, 172)
+offset = Vector2(9.755, 0)
+polygon = PackedVector2Array(661, 171, 319, 403, 273, 7, 538, -46)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1596655700]
+layer = 100
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=1695596968]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 1
+script = ExtResource("1_wtcfe")
+overlay_rect_path = NodePath(".")
+
+[node name="GDExample" type="GDExample" parent="." unique_id=268655170]
+position = Vector2(7.560185, 11.838011)
