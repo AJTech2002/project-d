@@ -13,12 +13,14 @@ layout(set = 0, binding = 1) uniform Params {
     int gridHeight;
     int camX;
     int camY;
+    int debugMode;
+    int padding; // padding to 32 bytes for std140 layout
 } params;
 
 struct Cell {
     int type; // 0 = empty, 1 = sand
     // padding to 16 bytes for std430 layout
-    int padding[3];
+    int debug[3];
 };
 
 layout (set = 0, binding = 2) buffer Cells {
@@ -40,6 +42,14 @@ void main() {
     // int idx = px.y * params.screenWidth + px.x;
     int idx = gridPos.y * params.gridWidth + gridPos.x;
     Cell cell = cells[idx];
+
+    if (params.debugMode != 0) {
+        if (cell.debug[0] != -1) {
+            // debug color
+            imageStore(out_img, px, vec4(cell.debug[0] / 255.0, cell.debug[1] / 255.0, cell.debug[2] / 255.0, 1.0));
+            return;
+        }
+    }
 
     if (cell.type == 1) { // sand
         imageStore(out_img, px, vec4(1.0, 1.0, 0.0, 1.0)); // yellow for sand

@@ -4,6 +4,10 @@ extends Node
 @export var sandEngine: SandEngine
 @export var camera: Camera2D
 
+# header category
+@export_group("Engine")
+@export var debugMode : bool = false
+
 var rd: RenderingDevice
 
 var tex_rid: RID
@@ -75,7 +79,7 @@ func _ready():
 
 
 	# 300 x 300 is grid width, W, H is screen size
-	var param_buf := PackedInt32Array([W, H, sandEngine.get_grid_width(), sandEngine.get_grid_height(), int(camera.position.x), int(camera.position.y), 0, 0]).to_byte_array()
+	var param_buf := PackedInt32Array([W, H, sandEngine.get_grid_width(), sandEngine.get_grid_height(), int(camera.position.x), int(camera.position.y),1 if debugMode else 0, 0]).to_byte_array()
 
 	var p := rd.uniform_buffer_create(param_buf.size(), param_buf)
 	
@@ -109,7 +113,7 @@ func _process(_dt):
 
 	# Update uniform buffer with camera position
 	var top_left := camera.get_screen_center_position() - Vector2(W, H) * 0.5
-	var param_buf := PackedInt32Array([W, H, sandEngine.get_grid_width(), sandEngine.get_grid_height(), int(floor(top_left.x)), int(floor(top_left.y)), 0, 0]).to_byte_array()
+	var param_buf := PackedInt32Array([W, H, sandEngine.get_grid_width(), sandEngine.get_grid_height(), int(floor(top_left.x)), int(floor(top_left.y)),1 if debugMode else 0, 0]).to_byte_array()
 	rd.buffer_update(param_buffer, 0, param_buf.size(), param_buf)
 	# Dispatch compute every frame
 	var cl := rd.compute_list_begin()
@@ -122,3 +126,15 @@ func _process(_dt):
 	rd.compute_list_dispatch(cl, gx, gy, 1)
 	rd.compute_list_end()
 	# rd.submit()
+
+
+	# Check for mouse down, cast to world position, and place particle
+	if Input.is_mouse_button_pressed(MouseButton.MOUSE_BUTTON_LEFT):
+		var world_pos = camera.get_global_mouse_position()
+		var cell_x = int(floor(world_pos.x))
+		var cell_y = int(floor(world_pos.y))
+
+		var placement_radius = 4
+		for x in range(cell_x - placement_radius, cell_x + placement_radius + 1):
+			for y in range(cell_y - placement_radius, cell_y + placement_radius + 1):
+				sandEngine.place_particle(Vector2i(x, y), 1) # type 1 is sand, change if you want to place different particle types

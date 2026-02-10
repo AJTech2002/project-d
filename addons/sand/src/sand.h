@@ -2,13 +2,21 @@
 
 #include <godot_cpp/classes/sprite2d.hpp>
 #include <vector>
+#include <map>
+#include <set>
 
 namespace godot {
 
+struct Particle; // Forward declaration
+
 struct Cell {
 	uint32_t type;
-	// pad 
-	uint32_t padding[3];
+	// debug color
+	uint32_t debug[3];
+};
+
+struct CellInfo {
+	Particle* particle;
 };
 
 struct Particle {
@@ -16,6 +24,7 @@ struct Particle {
 	Vector2 position;
 	Vector2 velocity;
 	uint32_t type;
+
 	int id;
 };
 
@@ -29,7 +38,10 @@ private:
 	int height = 300;
 	int width = 300;
 	std::vector<Cell> cells;
-	std::vector<Particle> particles;
+	std::vector<CellInfo> cellData;
+	std::vector<Particle*> particles;
+	std::map<uint32_t, Particle*> particle_map; // map from cell index to particle pointer for O(1) access
+	std::set<uint32_t> active_particles;
 	void create_ssbo();
 	void update_ssbo();
 
@@ -51,6 +63,8 @@ public:
 
 	int get_grid_width() const { return width; }
 	int get_grid_height() const { return height; }
+
+	void place_particle(const Vector2i &cell, uint32_t type);
 };
 
 } // namespace godot

@@ -13,14 +13,12 @@ size = Vector2(5, 11)
 
 [node name="Node2D" type="Node2D" unique_id=2126344831]
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1949040053]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=353548164]
 position = Vector2(145, 217)
 
-[node name="Sprite2D" type="Sprite2D" parent="Camera2D" unique_id=353548164]
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D" unique_id=1549121606]
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Camera2D/Sprite2D" unique_id=1549121606]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/Sprite2D/StaticBody2D" unique_id=1553352379]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/StaticBody2D" unique_id=1553352379]
 position = Vector2(4, 91)
 shape = SubResource("RectangleShape2D_q6r6c")
 
@@ -36,7 +34,7 @@ grow_vertical = 2
 script = ExtResource("1_wtcfe")
 overlay_rect_path = NodePath(".")
 sandEngine = NodePath("../../SandEngine")
-camera = NodePath("../../Camera2D")
+camera = NodePath("../../CharacterBody2D/Camera2D")
 
 [node name="InputManager" type="Node" parent="." unique_id=737513036 node_paths=PackedStringArray("sandEngine")]
 script = ExtResource("2_0e48y")
@@ -54,3 +52,7 @@ texture = ExtResource("3_epypp")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1604603133]
 position = Vector2(-0.5, 2.5)
 shape = SubResource("RectangleShape2D_0hol4")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=1949040053]
+position = Vector2(1, -101)
+offset = Vector2(0, 43.96)

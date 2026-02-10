@@ -21,9 +21,11 @@ aseprite_executable_path="C:/Program Files (x86)/Steam/steamapps/common/Aseprite
 
 [display]
 
-window/size/viewport_width=320
-window/size/viewport_height=180
+window/size/viewport_width=240
+window/size/viewport_height=135
 window/size/always_on_top=true
+window/size/window_width_override=960
+window/size/window_height_override=540
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 
@@ -40,6 +42,8 @@ left={
 
 [physics]
 
+2d/run_on_separate_thread=true
+common/max_physics_steps_per_frame=2
 3d/physics_engine="Jolt Physics"
 
 [rendering]
