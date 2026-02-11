@@ -35,6 +35,8 @@ script = ExtResource("1_wtcfe")
 overlay_rect_path = NodePath(".")
 sandEngine = NodePath("../../SandEngine")
 camera = NodePath("../../CharacterBody2D/Camera2D")
+brushType = 2
+debugOption = 1
 
 [node name="InputManager" type="Node" parent="." unique_id=737513036 node_paths=PackedStringArray("sandEngine")]
 script = ExtResource("2_0e48y")

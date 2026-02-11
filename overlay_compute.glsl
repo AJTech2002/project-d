@@ -54,6 +54,9 @@ void main() {
     if (cell.type == 1) { // sand
         imageStore(out_img, px, vec4(1.0, 1.0, 0.0, 1.0)); // yellow for sand
     }
+    else if (cell.type == 2) {
+        imageStore(out_img, px, vec4(0.0, 0.0, 1.0, 1.0)); // yellow for sand
+    }
     else {
         imageStore(out_img, px, vec4(0.0, 0.0, 0.0, 0.0)); // black for empty
     }
