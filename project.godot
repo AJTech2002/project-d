@@ -12,7 +12,7 @@ config_version=5
 
 config/name="ProjectD"
 run/main_scene="uid://cto16x53n0ftd"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [aseprite_importers]
@@ -21,8 +21,9 @@ aseprite_executable_path="C:/Program Files (x86)/Steam/steamapps/common/Aseprite
 
 [display]
 
-window/size/viewport_width=240
-window/size/viewport_height=135
+window/size/viewport_width=360
+window/size/viewport_height=203
+window/size/initial_position_type=3
 window/size/always_on_top=true
 window/size/window_width_override=960
 window/size/window_height_override=540

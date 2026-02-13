@@ -7,3 +7,4 @@ reloadable = true
 [libraries]
 
 windows.debug.x86_64 = "./project/bin/sand.windows.template_debug.x86_64.dll"
+macos.debug.arm64 = "./project/bin/libsand.macos.template_debug.arm64.dylib"

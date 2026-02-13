@@ -3,29 +3,35 @@
 [ext_resource type="Script" uid="uid://k1m0iuia814" path="res://scripts/compute_renderer.gd" id="1_wtcfe"]
 [ext_resource type="Script" uid="uid://dpmkorn0ldiwt" path="res://scripts/input_manager.gd" id="2_0e48y"]
 [ext_resource type="Script" uid="uid://bv3gr0lr3nnq0" path="res://scripts/simple_character.gd" id="3_0hol4"]
-[ext_resource type="Texture2D" uid="uid://dge3go7hj23t4" path="res://sprites/simple-character.ase" id="3_epypp"]
+[ext_resource type="Script" uid="uid://bpr365rlssd1l" path="res://register_rbody.gd" id="4_0hol4"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_epypp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kdubu"]
+size = Vector2(5130.666, 21.47403)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_epypp"]
+size = Vector2(4521.753, 153.93274)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q6r6c"]
-size = Vector2(302, 20)
+size = Vector2(937.99194, 177.022)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0hol4"]
 size = Vector2(5, 11)
 
+[sub_resource type="QuadMesh" id="QuadMesh_epypp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_d21ai"]
+size = Vector2(40, 40)
+
 [node name="Node2D" type="Node2D" unique_id=2126344831]
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=353548164]
-position = Vector2(145, 217)
-
-[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D" unique_id=1549121606]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/StaticBody2D" unique_id=1553352379]
-position = Vector2(4, 91)
-shape = SubResource("RectangleShape2D_q6r6c")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1596655700]
 layer = 100
 
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=1695596968 node_paths=PackedStringArray("sandEngine", "camera")]
+[node name="SandEngine" type="SandEngine" parent="CanvasLayer" unique_id=1813731176]
+
+[node name="SandRenderer" type="TextureRect" parent="CanvasLayer" unique_id=1695596968 node_paths=PackedStringArray("sandEngine", "camera")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -33,23 +39,79 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wtcfe")
 overlay_rect_path = NodePath(".")
-sandEngine = NodePath("../../SandEngine")
+sandEngine = NodePath("../SandEngine")
 camera = NodePath("../../CharacterBody2D/Camera2D")
 brushType = 2
-debugOption = 1
 
-[node name="InputManager" type="Node" parent="." unique_id=737513036 node_paths=PackedStringArray("sandEngine")]
+[node name="WallLeft" type="Sprite2D" parent="." unique_id=163750602]
+position = Vector2(1525, -74.00003)
+rotation = 1.5707964
+scale = Vector2(0.088682435, 2.8872104)
+texture = SubResource("ImageTexture_epypp")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="WallLeft" unique_id=325432704]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft/StaticBody2D" unique_id=1420403966]
+position = Vector2(1905.6771, 240.37042)
+scale = Vector2(1, 1.0000001)
+shape = SubResource("RectangleShape2D_kdubu")
+
+[node name="ColorRect" type="ColorRect" parent="WallLeft" unique_id=671651709]
+offset_left = -149.0
+offset_top = 83.0
+offset_right = 824.0
+offset_bottom = 251.0
+scale = Vector2(6.039999, 1)
+color = Color(0.0075868503, 0.056447543, 0.13011828, 1)
+
+[node name="WallRight" type="Sprite2D" parent="." unique_id=362936984]
+position = Vector2(239, -74.00003)
+rotation = 1.5707964
+scale = Vector2(0.088682435, 2.8872104)
+texture = SubResource("ImageTexture_epypp")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="WallRight" unique_id=718335373]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight/StaticBody2D" unique_id=1862708419]
+position = Vector2(2103.0107, 159.74527)
+scale = Vector2(1, 1.0000001)
+shape = SubResource("RectangleShape2D_epypp")
+
+[node name="ColorRect" type="ColorRect" parent="WallRight" unique_id=886519624]
+offset_left = -150.10347
+offset_top = 82.76953
+offset_right = 823.0792
+offset_bottom = 251.0
+scale = Vector2(6.039999, 1)
+color = Color(0.0075868503, 0.056447543, 0.13011828, 1)
+
+[node name="WallBottom" type="Sprite2D" parent="." unique_id=353548164]
+position = Vector2(145, 217)
+texture = SubResource("ImageTexture_epypp")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="WallBottom" unique_id=1549121606]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallBottom/StaticBody2D" unique_id=1553352379]
+position = Vector2(249, 172.51062)
+rotation = 4.6133995e-05
+shape = SubResource("RectangleShape2D_q6r6c")
+
+[node name="ColorRect" type="ColorRect" parent="WallBottom" unique_id=858010827]
+offset_left = -149.0
+offset_top = 83.0
+offset_right = 824.0
+offset_bottom = 251.0
+scale = Vector2(6.039999, 1)
+color = Color(0.0075868503, 0.056447543, 0.13011828, 1)
+
+[node name="InputManager" type="Node" parent="." unique_id=737513036]
 script = ExtResource("2_0e48y")
-sandEngine = NodePath("../SandEngine")
-
-[node name="SandEngine" type="SandEngine" parent="." unique_id=392415866]
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=924577880]
 position = Vector2(136, 274)
 script = ExtResource("3_0hol4")
 
 [node name="SimpleCharacter" type="Sprite2D" parent="CharacterBody2D" unique_id=758618226]
-texture = ExtResource("3_epypp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1604603133]
 position = Vector2(-0.5, 2.5)
@@ -57,4 +119,22 @@ shape = SubResource("RectangleShape2D_0hol4")
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=1949040053]
 position = Vector2(1, -101)
-offset = Vector2(0, 43.96)
+offset = Vector2(0, 15)
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="CharacterBody2D" unique_id=1419804501]
+position = Vector2(-0.4999962, 2.5000057)
+scale = Vector2(5.0000076, 11.000011)
+mesh = SubResource("QuadMesh_epypp")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1945336313]
+offset_left = 255.0
+offset_top = 8.0
+offset_right = 295.0
+offset_bottom = 48.0
+
+[node name="RigidBody2D" type="RigidBody2D" parent="ColorRect" unique_id=1427399479]
+script = ExtResource("4_0hol4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ColorRect/RigidBody2D" unique_id=1566821128]
+position = Vector2(20, 20)
+shape = SubResource("RectangleShape2D_d21ai")

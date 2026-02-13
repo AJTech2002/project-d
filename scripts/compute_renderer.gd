@@ -1,3 +1,5 @@
+class_name ComputeRenderer
+
 extends Node
 
 @export var overlay_rect_path: NodePath
@@ -7,7 +9,12 @@ extends Node
 
 # header category
 @export_group("Engine")
-@export var debugOption : int = 0
+@export var debugOption: int = 0
+
+static var instance: ComputeRenderer
+
+static func get_instance():
+	return instance
 
 var rd: RenderingDevice
 
@@ -20,6 +27,7 @@ var uniform_set_rid: RID
 var out_tex: Texture2DRD
 
 var param_buffer: RID
+var bodies: Array[RigidBody2D] = []
 
 var W := 124
 var H := 124
@@ -27,11 +35,18 @@ var pixelDensity := 1
 
 var initialized := false
 
-func _ready():
+func register_rigid_body(body: RigidBody2D):
+	bodies.append(body)
 
-	# wait two frames to ensure everything is initialized, especially the sand engine's SSBO
+func _ready():
+	instance = self
+
 	await get_tree().process_frame
 	await get_tree().process_frame
+
+	# Register rigidbodies that will affect the simulation
+	for b in bodies:
+		sandEngine.register_rbody(b)
 
 	rd = RenderingServer.get_rendering_device()
 	
@@ -65,13 +80,11 @@ func _ready():
 		return
 
 	
-
 	shader_rid = rd.shader_create_from_spirv(spirv)
 	shader_rid = rd.shader_create_from_spirv(spirv)
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
 
 	
-
 	# --- Uniform set binding the storage image ---
 	var u := RDUniform.new()
 	u.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
@@ -108,7 +121,6 @@ func _ready():
 
 	initialized = true
 
-
 func _process(_dt):
 	if not initialized:
 		return
@@ -133,7 +145,7 @@ func _process(_dt):
 
 	if Input.is_mouse_button_pressed(MouseButton.MOUSE_BUTTON_MIDDLE):
 		brushType += 1
-		if brushType > 2: 
+		if brushType > 2:
 			brushType = 1
 		
 

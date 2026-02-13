@@ -55,7 +55,11 @@ void main() {
         imageStore(out_img, px, vec4(1.0, 1.0, 0.0, 1.0)); // yellow for sand
     }
     else if (cell.type == 2) {
-        imageStore(out_img, px, vec4(0.0, 0.0, 1.0, 1.0)); // yellow for sand
+        imageStore(out_img, px, vec4(0.0, 0.0, 1.0, 0.4)); // blue for water
+    }
+    else if (cell.type == 3) {
+      // light blue for foam
+        imageStore(out_img, px, vec4(0.5, 0.5, 1.0, 0.6)); // light blue for foam
     }
     else {
         imageStore(out_img, px, vec4(0.0, 0.0, 0.0, 0.0)); // black for empty

@@ -3,15 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dge3go7hj23t4"
-path="res://.godot/imported/simple-character.ase-4d37203634c83b56e8d7e78a73841eb6.ctex"
-metadata={
-"vram_texture": false
-}
+valid=false
 
 [deps]
 
 source_file="res://sprites/simple-character.ase"
-dest_files=["res://.godot/imported/simple-character.ase-4d37203634c83b56e8d7e78a73841eb6.ctex"]
 
 [params]
 
