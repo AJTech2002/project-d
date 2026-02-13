@@ -261,7 +261,7 @@ void SandEngine::_physics_process(double delta)
   // std::shuffle(shuffled.begin(), shuffled.end(), std::default_random_engine(frame)); // shuffle
 
   // clear rigidbodies
-  memset(rigidBodies.data(), 0, rigidBodies.size() * sizeof(int));
+  memset(rigidyBodyOccupancy.data(), 0, rigidyBodyOccupancy.size() * sizeof(int));
 
   for (int i = 0; i < rigidBodies.size(); i++)
   {
