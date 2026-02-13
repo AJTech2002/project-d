@@ -25,59 +25,113 @@ void godot::Sand::update(double delta)
     to.y = CLAMP(to.y, 0, height - 1);
 
     Vector2i new_cell = from;
-	engine->for_each_along_line(from, to, [&](const int &i, const Vector2i &cell) {
-		if (i == 0) return false; // skip the starting cell
-		if (i > 100) {
-			print_line("Warning: find_last_available_cell exceeded 100 iterations, possible infinite loop. Returning last available cell found.");
-			return true; // limit to 100 iterations to prevent infinite loops
-		}
-        
-        // Support swapping with liquid
-		if (engine->get_cell(cell.x, cell.y)->type != 0 && engine->get_cell(cell.x, cell.y)->type != Water::TYPE) {
-			return true; // stop iterating
-		}
-		new_cell = cell;
-		return false; // continue iterating
-	});
 
-    // if blocked, try diagonal down-left/down-right
-    if (new_cell == from)
+    RigidBody2D *withinRigidbody = engine->get_rigid_body_at(from.x, from.y);
+
+    if (withinRigidbody != nullptr)
     {
-        int dir = this->id % 2 == 0 ? -1 : 1;
-        dir *= (frame / 10) % 2 == 0 ? -1 : 1; // alternate direction every 10 frames to reduce clumping
-   
-        Vector2i d1 = from + Vector2i(dir, 1);
-        Vector2i d2 = from + Vector2i(-dir, 1);
 
-        Vector2 oldVelocity = this->velocity;
+        Vector2i searchTo = from + Vector2i(0, -50);
+        engine->for_each_along_line(from, searchTo, [&](const int &i, const Vector2i &cell)
+        {
+            if (i == 0)
+                return false; // skip the starting cell
+            if (i > 100)
+            {
+                print_line("Warning: find_last_available_cell for rigidbody exceeded 100 iterations, possible infinite loop. Returning last available cell found.");
+                return true; // limit to 100 iterations to prevent infinite loops
+            }
 
-        if (d1.x >= 0 && d1.x < width && d1.y >= 0 && d1.y < height &&
-            (engine->get_cell(d1.x, d1.y)->type == 0 || engine->get_cell(d1.x, d1.y)->type == Water::TYPE))
-        {
-            this->velocity.x = dir;
-            this->velocity.y = 0.5f;
-        }
-        else if (d2.x >= 0 && d2.x < width && d2.y >= 0 && d2.y < height &&
-                 (engine->get_cell(d2.x, d2.y)->type == 0 || engine->get_cell(d2.x, d2.y)->type == Water::TYPE))
-        {
-            this->velocity.x = -dir;
-            this->velocity.y = 0.5f;
-        }
+            if (engine->get_rigid_body_at(cell.x, cell.y) == nullptr)
+            {
+                new_cell = cell;
+                return true; // stop iterating once we find a non-rigidbody cell
+            }
+            return false; // continue iterating
+        });
+
+        velocity.y = -2.0f; // give an initial upward velocity to help escape the rigidbody
+        // x away from center of rigidbody to help escape horizontally as well
+        Vector2 body_center = withinRigidbody->get_global_transform().get_origin();   
+        if (from.x < body_center.x)
+            velocity.x = -2.0f;
         else
-        {
-            this->velocity.x *= 0.2f;
-            this->velocity.y *= 0.2f;
-        }
+            velocity.x = 2.0f;
+
+
+        // apply force to rbody from this position -> body center
+        Vector2 force_dir = (body_center - Vector2(from.x, from.y)).normalized();
+        Vector2 relPos = withinRigidbody->get_global_transform().xform_inv(Vector2(from.x, from.y));
+        withinRigidbody->apply_force(force_dir * 40.0f, relPos);
+        // ensure max vel
+        withinRigidbody->set_linear_velocity(withinRigidbody->get_linear_velocity().clamp(Vector2(-10, -10), Vector2(10, 10)));
+        withinRigidbody->set_angular_velocity(CLAMP(withinRigidbody->get_angular_velocity(), -2.0f, 2.0f));
     }
     else
     {
-        this->velocity.x *= 0.4f;
+
+        engine->for_each_along_line(from, to, [&](const int &i, const Vector2i &cell)
+        {
+            if (i == 0)
+                return false; // skip the starting cell
+            if (i > 100)
+            {
+                print_line("Warning: find_last_available_cell exceeded 100 iterations, possible infinite loop. Returning last available cell found.");
+                return true; // limit to 100 iterations to prevent infinite loops
+            }
+
+            // Support swapping with liquid
+            if (
+                engine->get_rigid_body_at(cell.x, cell.y) != nullptr ||
+                engine->get_cell(cell.x, cell.y)->type != 0 &&
+                    engine->get_cell(cell.x, cell.y)->type != Water::TYPE)
+            {
+                return true; // stop iterating
+            }
+            new_cell = cell;
+            return false; // continue iterating
+        });
+
+        // if blocked, try diagonal down-left/down-right
+        if (new_cell == from)
+        {
+            int dir = this->id % 2 == 0 ? -1 : 1;
+            dir *= (frame / 10) % 2 == 0 ? -1 : 1; // alternate direction every 10 frames to reduce clumping
+
+            Vector2i d1 = from + Vector2i(dir, 1);
+            Vector2i d2 = from + Vector2i(-dir, 1);
+
+            Vector2 oldVelocity = this->velocity;
+
+            if (d1.x >= 0 && d1.x < width && d1.y >= 0 && d1.y < height &&
+                (engine->get_cell(d1.x, d1.y)->type == 0 || engine->get_cell(d1.x, d1.y)->type == Water::TYPE))
+            {
+                this->velocity.x = dir;
+                this->velocity.y = 0.5f;
+            }
+            else if (d2.x >= 0 && d2.x < width && d2.y >= 0 && d2.y < height &&
+                     (engine->get_cell(d2.x, d2.y)->type == 0 || engine->get_cell(d2.x, d2.y)->type == Water::TYPE))
+            {
+                this->velocity.x = -dir;
+                this->velocity.y = 0.5f;
+            }
+            else
+            {
+                this->velocity.x *= 0.2f;
+                this->velocity.y *= 0.2f;
+            }
+        }
+        else
+        {
+            this->velocity.x *= 0.4f;
+        }
     }
 
     if (new_cell != from)
     {
         // Swap with liquid if needed
-        if (engine->get_cell(new_cell.x, new_cell.y)->type == Water::TYPE) {
+        if (engine->get_cell(new_cell.x, new_cell.y)->type == Water::TYPE)
+        {
             engine->get_particle(new_cell.x, new_cell.y)->set_active(true);
             swap(engine->get_particle(new_cell.x, new_cell.y));
         }
@@ -89,6 +143,6 @@ void godot::Sand::update(double delta)
     if (this->velocity.length() < RESTING_VELOCITY)
     {
         this->velocity = Vector2(0, 0);
-        this->set_active(false);
+        // this->set_active(false);
     }
 }

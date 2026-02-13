@@ -108,6 +108,16 @@ namespace godot
       return &cells[gridIndex(x, y)];
     }
 
+    RigidBody2D* get_rigid_body_at(const int x, const int y)
+    {
+      if (x < 0 || y < 0 || x >= width || y >= height)
+        return nullptr;
+      int occupancy = rigidyBodyOccupancy[gridIndex(x, y)];
+      if (occupancy == 0)
+        return nullptr;
+      return rigidBodies[occupancy - 1];
+    }
+
     Particle *get_particle(const int x, const int y)
     {
       if (x < 0 || y < 0 || x >= width || y >= height)

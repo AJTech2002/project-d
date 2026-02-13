@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgrf6k3p3uy6d"
-valid=false
+path="res://.godot/imported/simple-character.aseprite-d549408515bbda0814986836edd091af.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://sprites/simple-character.aseprite"
+dest_files=["res://.godot/imported/simple-character.aseprite-d549408515bbda0814986836edd091af.ctex"]
 
 [params]
 

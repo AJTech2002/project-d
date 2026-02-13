@@ -19,6 +19,7 @@ namespace godot {
         Vector2i cell;
         Vector2 position;
         Vector2 velocity;
+        Vector2 externalVelocity;
         uint32_t type;
         int id;
         bool active = true;

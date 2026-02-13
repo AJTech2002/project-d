@@ -30,7 +30,7 @@ void SandEngine::_bind_methods()
   ClassDB::bind_method(D_METHOD("place_particle", "cell", "type"), &SandEngine::spawn_particle);
   ClassDB::bind_method(D_METHOD("set_debug_mode", "mode"), &SandEngine::set_debug_mode);
   ClassDB::bind_method(D_METHOD("get_debug_mode"), &SandEngine::get_debug_mode);
-  ClassDB::bind_method(D_METHOD("register_rbody"), &SandEngine::register_rigid_body);
+  ClassDB::bind_method(D_METHOD("register_rigid_body"), &SandEngine::register_rigid_body);
 }
 
 void SandEngine::register_rigid_body(RigidBody2D *rBody)
@@ -238,6 +238,9 @@ void SandEngine::spawn_particle(const Vector2i &cell, uint32_t type)
   if (cells[cell.y * width + cell.x].type != 0)
     return;
 
+  if (rigidyBodyOccupancy[cell.y * width + cell.x] != 0)
+    return;
+
   if (type == Sand::TYPE)
   {
     Sand *p = new Sand{this, cell, Vector2(cell.x, cell.y), Vector2(0, 0)};
@@ -263,36 +266,70 @@ void SandEngine::_physics_process(double delta)
   // clear rigidbodies
   memset(rigidyBodyOccupancy.data(), 0, rigidyBodyOccupancy.size() * sizeof(int));
 
+  // clear debug
+  for (int i = 0; i < width * height; i++)
+  {
+    cells[i].debug[0] = -1;
+    cells[i].debug[1] = -1;
+    cells[i].debug[2] = -1;
+  }
+
+  
+  std::vector<Particle*> affectedParticles;
+
+  // Scan rigidbodies and mark occupied cells, also mark debug
   for (int i = 0; i < rigidBodies.size(); i++)
   {
     RigidBody2D *rb = rigidBodies[i];
     CollisionShape2D *shape = static_cast<CollisionShape2D *>(rb->get_child(0));
     Ref<Shape2D> shape2D = shape->get_shape();
+
+    if (shape2D.is_null())
+      continue;
     // shape 2d is a rectangle, get bounds
     if (shape2D->get_class() == "RectangleShape2D")
     {
       Vector2 extents = static_cast<RectangleShape2D *>(shape2D.ptr())->get_size();
-      int width = static_cast<int>(extents.x);
-      int height = static_cast<int>(extents.y);
+      int width = static_cast<int>(extents.x/2);
+      int height = static_cast<int>(extents.y/2);
 
       Transform2D global_transform = rb->get_global_transform();
-      for (int x = -width; x <= width; x++)
+      for (int x = -width*2; x <= width*2; x++)
       {
-        for (int y = -height; y <= height; y++)
+        for (int y = -height*2; y <= height*2; y++)
         {
-          Vector2 point = global_transform.xform(Vector2(x, y));
+          // float locX = (float)x/(float)width;
+          // float locY = (float)y/(float)height;
+
+          Vector2 point = global_transform.xform(Vector2((float)x/2.0f, (float)y/2.0f));
           int grid_x = static_cast<int>(point.x);
           int grid_y = static_cast<int>(point.y);
+
           if (grid_x < 0 || grid_y < 0 || grid_x >= this->width || grid_y >= this->height)
             continue;
-          rigidyBodyOccupancy[grid_y * this->width + grid_x] = i;
+
+          rigidyBodyOccupancy[grid_y * this->width + grid_x] = i + 1;
+
           get_cell(grid_x, grid_y)->debug[0] = 255; // mark rigidbody occupied cells as red for debugging
           get_cell(grid_x, grid_y)->debug[1] = 0;
           get_cell(grid_x, grid_y)->debug[2] = 0;
+
+          // check occupancy
+          if (get_cell(grid_x, grid_y)->type != 0)
+          {
+            // if occupied, move particle out of the way
+            Particle *p = get_particle(grid_x, grid_y);
+            if (p != nullptr)
+            {
+                affectedParticles.push_back(p);
+            }
+          }
+
         }
       }
     }
   }
+
 
   std::vector<uint32_t> to_update(
       active_particles.begin(),
@@ -312,6 +349,59 @@ void SandEngine::_physics_process(double delta)
       p->update_debug();
     }
   }
+
+
+  // // Move affected particles out of the way of rigidbodies
+  // for (Particle* p : affectedParticles) {
+  //   p->set_active(true);
+  //   int grid_x = p->cell.x;
+  //   int grid_y = p->cell.y;
+  //   Vector2i from = Vector2i(grid_x, grid_y);
+  //   Vector2i new_cell = from;
+
+  //   RigidBody2D* rb = get_rigid_body_at(grid_x, grid_y);
+  //   Vector2 body_center = rb->get_global_transform().get_origin();   
+  //   Vector2 force_dir = (body_center - Vector2(from.x, from.y)).normalized();
+
+  //   Vector2i searchTo = from + Vector2i((int)(force_dir.x * 20), (int)(force_dir.y * 20)); // search up to 10 cells away in the direction away from the rigidbody
+  //   for_each_along_line(from, searchTo, [&](const int &i, const Vector2i &cell)
+  //   {
+  //       if (i == 0)
+  //           return false; // skip the starting cell
+  //       if (i > 100)
+  //       {
+  //           print_line("Warning: find_last_available_cell for rigidbody exceeded 100 iterations, possible infinite loop. Returning last available cell found.");
+  //           return true; // limit to 100 iterations to prevent infinite loops
+  //       }
+
+  //       if (get_rigid_body_at(cell.x, cell.y) == nullptr)
+  //       {
+  //           new_cell = cell;
+  //           return true; // stop iterating once we find a non-rigidbody cell
+  //       }
+  //       return false; // continue iterating
+  //   });
+
+  //   p->externalVelocity.y = -0.5f; // give an initial upward velocity to help escape the rigidbody
+  //   // x away from center of rigidbody to help escape horizontally as well
+
+
+  //   if (from.x < body_center.x)
+  //       p->externalVelocity.x = -0.5f;
+  //   else
+  //       p->externalVelocity.x = 0.5f;
+
+
+  //   // apply force to rbody from this position -> body center
+  //   Vector2 relPos = rb->get_global_transform().xform_inv(Vector2(from.x, from.y));
+  //   rb->apply_force(force_dir * 0.05f, relPos); // apply a strong force to try to move the rigidbody out of the way, otherwise the particle might get stuck
+  
+    
+  //   get_cell(grid_x, grid_y)->debug[0] = 0;
+  //   get_cell(grid_x, grid_y)->debug[1] = force_dir.y * 0.05f;
+  //   get_cell(grid_x, grid_y)->debug[2] = force_dir.x * 0.05f;
+
+  // }
 
   update_ssbo();
 }

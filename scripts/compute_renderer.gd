@@ -46,7 +46,7 @@ func _ready():
 
 	# Register rigidbodies that will affect the simulation
 	for b in bodies:
-		sandEngine.register_rbody(b)
+		sandEngine.register_rigid_body(b)
 
 	rd = RenderingServer.get_rendering_device()
 	
